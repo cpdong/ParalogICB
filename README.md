@@ -8,6 +8,9 @@ Make sure the following programs/packages installed and added to your `PATH`:
   - numpy
   - scipy
   - urllib
+  - pathlib
+  - gzip
+  - glob
   - statsmodels
   - bs4
   - functools
