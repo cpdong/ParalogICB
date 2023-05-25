@@ -20,3 +20,5 @@ Make sure the following programs/packages installed and added to your `PATH`:
   - stats
   - survival
   - TCGAbiolinks
+- Blast
+- PAML
