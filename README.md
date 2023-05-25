@@ -14,11 +14,16 @@ Make sure the following programs/packages installed and added to your `PATH`:
   - statsmodels
   - bs4
   - functools
+  - cmapPy
   - rpy2
 - R 4.2.0+
   - base
   - stats
   - survival
   - TCGAbiolinks
-- Blast
-- PAML
+- Blast-2.13.0+
+- PAML-4.10.6
+  - codeml
+- pal2nal-v14
+- ClustalW2-2.1
+- TM-score
