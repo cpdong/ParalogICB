@@ -21,6 +21,7 @@ Make sure the following programs/packages installed and added to your `PATH`:
   - base
   - stats
   - survival
+  - biomaRt
   - TCGAbiolinks
 - Blast-2.13.0+
 - PAML-4.10.6
