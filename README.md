@@ -16,6 +16,7 @@ Make sure the following programs/packages installed and added to your `PATH`:
   - functools
   - cmapPy
   - rpy2
+  - multiprocessing
 - R 4.2.0+
   - base
   - stats
