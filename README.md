@@ -1,4 +1,4 @@
-# ParalogICB
+# imParalog
 Systematically identification of ICB paralogs.
 
 ##  Prerequisites
