@@ -96,7 +96,7 @@ def paralog_HPA_exprs(paralogPairs, tmpdir='./'):
 
 if __name__ == '__main__':
     
-    workdir = "/Users/cpdong/Library/CloudStorage/Dropbox/project/paralogs/data/08_features/"
+    workdir = "/path/to/workdir/"
     
     paralog_file="Ensembl102_pcgene_paralog_bioMart_query_result.tsv"
     paralogData = pd.read_csv(paralog_file, header=0, sep="\t")
