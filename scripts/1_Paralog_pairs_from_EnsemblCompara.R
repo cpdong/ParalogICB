@@ -1,5 +1,4 @@
-library("biomaRt")
-
+library(biomaRt)
 ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl", version=102)
 attrlist=listAttributes(ensembl)$name
 para.attr<- c("ensembl_gene_id", attrlist[grepl("paralog", attrlist)])
