@@ -256,7 +256,50 @@ if __name__ == '__main__':
         resOut.append(res);
     
     df3 = pd.DataFrame(resOut[1:],columns=resOut[0]);
-    df3.to_csv('dNdS_result.txt', index=False, sep='\t');
-    print(time.strftime("%Y-%m-%d %H:%M:%S"), 'CodeML jobs done!')             
-    print(time.strftime("%Y-%m-%d %H:%M:%S"), 'All jobs done!')
+    df3.to_csv('Paraog_dNdS_result.txt', index=False, sep='\t');
+   
+    # section NMF calculation
+    # calculate co-evolution scores
+    data = pd.read_csv('paralog_evolution_269_species_profile.tsv',header=0,sep='\t')
+    profile = data[data.columns.intersection(['Geneid'] + [x for x in data.columns if 'taxonomy_' in x])]
+    profile.set_index('Geneid', inplace=True)
+    profile.columns = profile.columns.to_series().map(taxo_dict2)
+    # To reduce the influence of random matches in the phylogenetic profiles, if Pab <10 then we set Pab =1.
+    profile[profile < 10] = 1
+    profile1 = np.log2(profile.div(data['self_bitscore'].values,axis=0)) # log2(Pab/Paa)
+    #profile_zscore = (profile1 - profile1.mean())/profile1.std(ddof=0) # must set ddof=0
+    profile_zscore = profile1.apply(zscore).T
+
+    with urllib.request.urlopen("https://raw.githubusercontent.com/cpdong/imParalog/main/data/species_tree_branch_fulllength_weight.json") as url:
+        dd = json.load(url)
+    dd1 = pd.DataFrame(dd.items(), columns=['species','tree_weight']); dd1.set_index('species', inplace=True)
+    
+    profile_data = pd.merge(dd1,profile_zscore, left_index=True, right_index=True, how='inner')
+    profile_data.to_csv('/Users/cpdong/Dropbox/project/paralogs/data/07_coevolute/profile_data.txt', index=True, sep='\t');
+
+    paralog_file="Ensembl102_pcgene_paralog_bioMart_query_result.tsv"
+    paralogData = pd.read_csv(paralog_file, header=0, sep="\t")
+    paralogData = paralogData[["ensembl_gene_id", "hsapiens_paralog_ensembl_gene"]].drop_duplicates(keep='first')
+    
+    nmf_vals = []
+    for index, row in paralogData.iterrows():
+        nmf_val = None; gene1 = row[0]; gene2 = row[1];
+        if gene1 in profile_data.columns and gene2 in profile_data.columns:
+            featureMat = (profile_data[gene1] - profile_data[gene2])**2
+            weight = profile_data['tree_weight']
+            matrix_nmf = np.mat(featureMat) * np.mat(weight).T
+            nmf_val = matrix_nmf[0,0] # NMF like function
+            ''' matrix function in R
+            d<- read.csv('profile_data.txt', header=T, row.names=1, sep='\t')
+            gene1='ENSG00000211783'; gene2='ENSG00000176845'
+            featureMat = matrix((as.numeric(unlist(d[gene1])) - as.numeric(unlist(d[gene2])))^2, nrow=1)
+            weight = matrix(as.numeric(unlist(d['tree_weight'])), ncol = 1)
+            featureMat %*% weight
+            '''
+
+        if index % 1000 == 0:
+            print("processing: ", index)
+        nmf_vals.append(nmf_val)
+    paralogData['coevo_NMF'] = zscore(nmf_vals)
+    paralogData.to_csv('Paralog_coevolution_NMF_score.txt', index=False, sep='\t');
     
